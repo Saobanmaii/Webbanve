@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class BookingRequestDto {
-    @NotNull
+    // Khong dung nua: user lay tu token. Giu lai de FE cu gui len khong bi loi
     private Long userId;
     @NotNull
     private Long showtimeId;

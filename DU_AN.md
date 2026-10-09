@@ -56,9 +56,13 @@
   - [x] Search suất chiếu (nhiều bảng): `GET /showtimes/search` (movieId/cinemaId/date) — JOIN showtime→room→cinema, alias, `SELECT st.*` (chỉ cột bảng chính khi map về entity), `DATE(start_time)=:date`. Bẫy đã gặp: nối chuỗi quên space (`JOINmovie`), thiếu `st.*`.
 - [x] **C7** — Thống kê doanh thu theo phim bằng native SQL. → học (6)
   - [x] `GET /reports/revenue`: `SUM(t.price)` + `COUNT` + `GROUP BY m.id,m.title`, JOIN ticket→booking→showtime→movie, lọc `booking_status='PAID'` (chỉ đã trả tiền mới là doanh thu). Học map kết quả KHÔNG-phải-entity: `createNativeQuery(sql)` (không class) → `List<Object[]>` → dựng DTO tay; ép kiểu vs `.longValue()` (dùng `(Number).longValue()` cho id/count tránh Long/BigInteger, giữ `BigDecimal` cho tiền).
-- [ ] **C8** — Xuất Excel doanh thu (Apache POI). → học (7)
-- [ ] **C9** — i18n đa ngôn ngữ. → học (8)
-- [ ] **C10** — Spring Security + JWT + phân quyền USER/ADMIN. → học (9)
+- [x] **C8** — Xuất Excel doanh thu (Apache POI). → học (7)
+  - [x] `GET /reports/revenue-by-movie/excel` + `/revenue-by-cinema/excel` tải file `.xlsx`. Mô hình POI Workbook→Sheet→Row→Cell; ghi ra `ByteArrayOutputStream`→`byte[]`; trả `ResponseEntity<byte[]>` kèm header `Content-Disposition: attachment` + content-type xlsx; `try-with-resources` đóng workbook. Luyện thêm report "doanh thu theo rạp" (JOIN sâu room→cinema).
+- [x] **C9** — i18n đa ngôn ngữ. → học (8)
+  - [x] 3 file `messages/_vi/_en.properties` (UTF-8) + `spring.messages.encoding=UTF-8`; tiêm `MessageSource` vào 6 service, thay ~30 câu lỗi cứng bằng `getMessage(key, args, LocaleContextHolder.getLocale())`; câu có id dùng `{0}` + `new Object[]{id}`. Đổi tiếng theo header `Accept-Language: vi|en`. Bẫy: encoding file properties phải UTF-8 (IntelliJ dễ lưu sai → garble).
+- [x] **C10** — Spring Security + JWT + phân quyền USER/ADMIN. → học (9)
+  - [x] BCrypt (`PasswordEncoder`) + `CustomUserDetailService` (UserDetailsService nạp User→UserDetails, `@Transactional` cho roles LAZY). JWT: `JwtUtil` (jjwt 0.12, HS256) tạo/validate token, `JwtAuthFilter` (OncePerRequestFilter) đọc `Bearer` mỗi request → set SecurityContext. `AuthController` /auth/register (gán ROLE_USER) + /auth/login → token. `SecurityConfig` stateless + CORS (localhost:5173/3000) + phân quyền: public (GET catalog, /auth), ADMIN (CRUD + reports + seats), USER (bookings). `DataSeeder` seed 2 role + admin/admin123. Lỗi 401 (sai pass) + 403 (thiếu quyền).
+  - [x] Verified: compile OK + Spring context load OK + DataSeeder seed role/admin OK. (Phải DROP stale check `role_chk_1` CHECK(name between 0 and 1) — tàn dư ordinal cũ, ddl-auto không xóa → ROLE_USER index 2 vi phạm.)
 
 ## 4b. Thiết kế entity (chốt C1)
 
@@ -114,11 +118,11 @@ Ghi lại để không quên, làm sau khi xong lõi (sau C10) nếu còn hứng
 - **Dịch vụ bỏng nước (concession):** thêm `Product` (combo bỏng/nước) + `BookingItem`. Lúc đó `Booking` thành "đơn hàng" chứa cả vé lẫn đồ ăn, tổng tiền = tiền vé + tiền đồ ăn.
 
 ## 7. Tiến độ hiện tại
-- Đã xong: **C0 + C1 + C2 + C3 + C4 + C5 + C6 + C7** (CRUD Movie/Cinema/Room; Showtime + chống trùng giờ + xem lịch; Ghế: sinh + sơ đồ; Đặt vé: tạo/thanh toán/hủy/xem, chống trùng 2 lớp, transaction all-or-nothing; Search động native SQL 1 bảng + nhiều bảng JOIN; Report doanh thu SUM/GROUP BY). Compile SUCCESS.
+- Đã xong: **C0 → C10 — TOÀN BỘ BE** (CRUD Movie/Cinema/Room; Showtime + chống trùng giờ + xem lịch; Ghế: sinh + sơ đồ; Đặt vé: tạo/thanh toán/hủy/xem, chống trùng 2 lớp, transaction; Search động native SQL; Report doanh thu + Excel POI; i18n vi/en; Security + JWT + phân quyền). Compile + context load + seed DB đã verify. Đã push GitHub (repo Private). **Đã có API_SPEC.md bàn giao FE.**
 - Còn nợ (chủ động để sau, "sai rồi sửa mới nhớ"):
   - `unique=true` cho `User.username`/`email`/`Role.name`; đổi `List`→`Set` ở 2 chỗ @ManyToMany.
   - Trong `GlobalExceptionHandler.handleAll` (500): chưa `log.error(ex)` (sẽ mù khi có bug) + đang `setMessage(ex.getMessage())` (lộ nội bộ). Sửa khi gặp.
   - Chưa có handler `HttpMessageNotReadableException` → JSON hỏng/enum sai hiện ra **500** thay vì 400.
   - Endpoint xem sơ đồ ghế đang **lặp tiền tố**: `@GetMapping("/showtimes/{id}/seats")` trong class `@RequestMapping("/showtimes")` → URL thật `/showtimes/showtimes/{id}/seats`. Sửa method mapping thành `/{showtimeId}/seats`.
-- Việc tiếp theo: **C8 — Xuất Excel doanh thu (.xlsx) bằng Apache POI**. Kế hoạch 4 ngày nộp: C6✓ C7✓ → C8 (Excel) → C9 (i18n) + dọn dẹp. C10 Security để sau khi nộp.
+- Việc tiếp theo: **FRONT-END React** (dự án riêng, tách khỏi BE, chạy port 5173, Node.js + Vite). Scope: đủ luồng user (đăng nhập → xem phim → chọn ghế → đặt → vé) + admin (CRUD + doanh thu). CORS đã mở sẵn ở BE. Bàn giao qua `API_SPEC.md` (+ Swagger nếu thêm). BE xem như xong cho bản nộp; test HTTP auth (register/login/role) khi rảnh.
 - Đã học thêm ngoài roadmap (nền cho C6, chưa bắt buộc dùng): native `@Query`, JOIN, interface projection, console DB. Polish "lịch chiếu hiện tên" để dành.

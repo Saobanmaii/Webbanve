@@ -18,6 +18,12 @@ public class MovieMapper {
         movie.setGenre(dto.getGenre());
         movie.setAgeRating(dto.getAgeRating());
         movie.setStatus(dto.getStatus());
+        movie.setPosterUrl(dto.getPosterUrl());
+        movie.setBackdropUrl(dto.getBackdropUrl());
+        movie.setTrailerUrl(dto.getTrailerUrl());
+        movie.setDirector(dto.getDirector());
+        movie.setCast(dto.getCast());
+        movie.setRating(dto.getRating());
         return movie;
     }
 
@@ -32,6 +38,12 @@ public class MovieMapper {
         Dto.setGenre(entity.getGenre());
         Dto.setAgeRating(entity.getAgeRating());
         Dto.setStatus(entity.getStatus());
+        Dto.setPosterUrl(entity.getPosterUrl());
+        Dto.setBackdropUrl(entity.getBackdropUrl());
+        Dto.setTrailerUrl(entity.getTrailerUrl());
+        Dto.setDirector(entity.getDirector());
+        Dto.setCast(entity.getCast());
+        Dto.setRating(entity.getRating());
         return Dto;
     }
 }

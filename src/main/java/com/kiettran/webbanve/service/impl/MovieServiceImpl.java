@@ -75,6 +75,12 @@ public class MovieServiceImpl implements MovieService {
         if(dto.getGenre() != null) movie.setGenre(dto.getGenre());
         if(dto.getAgeRating() != null) movie.setAgeRating(dto.getAgeRating());
         if(dto.getStatus() != null) movie.setStatus(dto.getStatus());
+        if(dto.getPosterUrl() != null) movie.setPosterUrl(dto.getPosterUrl());
+        if(dto.getBackdropUrl() != null) movie.setBackdropUrl(dto.getBackdropUrl());
+        if(dto.getTrailerUrl() != null) movie.setTrailerUrl(dto.getTrailerUrl());
+        if(dto.getDirector() != null) movie.setDirector(dto.getDirector());
+        if(dto.getCast() != null) movie.setCast(dto.getCast());
+        if(dto.getRating() != null) movie.setRating(dto.getRating());
         return movieMapper.toDto(movieRepository.save(movie));
     }
 

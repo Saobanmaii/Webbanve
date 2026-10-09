@@ -12,6 +12,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,12 @@ public class ReportServiceImpl implements ReportService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    private final MessageSource messageSource;
+
+    public ReportServiceImpl(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -105,7 +113,7 @@ public class ReportServiceImpl implements ReportService {
             workbook.write(out);
             return out.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException("loi khi export file excel", e);
+            throw new RuntimeException(messageSource.getMessage("report.export.error", null, LocaleContextHolder.getLocale()), e);
         }
     }
 
@@ -132,7 +140,7 @@ public class ReportServiceImpl implements ReportService {
             workbook.write(out);
             return out.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("loi khi export file excel", e);
+            throw new RuntimeException(messageSource.getMessage("report.export.error", null, LocaleContextHolder.getLocale()), e);
         }
     }
 }

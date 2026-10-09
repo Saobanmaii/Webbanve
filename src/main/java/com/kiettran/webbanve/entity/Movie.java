@@ -35,4 +35,19 @@ public class Movie {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MovieStatus status;
+    @Column(name = "poster_url", length = 1000)
+    private String posterUrl;
+    @Column(name = "backdrop_url", length = 1000)
+    private String backdropUrl;
+    @Column(name = "trailer_url", length = 1000)
+    private String trailerUrl;
+    @Column(name = "director", length = 255)
+    private String director;
+    @Column(name = "cast_members", length = 1000)
+    private String cast;
+    @Column(name = "rating")
+    private Double rating;
+    // id phim ben TMDB, dung de seed khong bi trung
+    @Column(name = "tmdb_id", unique = true)
+    private Long tmdbId;
 }

@@ -19,4 +19,10 @@ public class MovieResponseDto {
     private String genre;
     private AgeRating ageRating;
     private MovieStatus status;
+    private String posterUrl;
+    private String backdropUrl;
+    private String trailerUrl;
+    private String director;
+    private String cast;
+    private Double rating;
 }

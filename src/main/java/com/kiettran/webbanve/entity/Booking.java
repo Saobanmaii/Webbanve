@@ -28,4 +28,9 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
+
+    // nullable vi cac booking cu tao truoc khi co cot nay
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "showtime_id", referencedColumnName = "id")
+    private Showtime showtime;
 }

@@ -10,10 +10,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RoomRequestDto {
-    @NotBlank(message = "Ten phong khong duoc de trong")
+    @NotBlank(message = "{room.name.notblank}")
     private String name;
-    @NotNull(message = "Loai phong khong duoc de trong")
+    @NotNull(message = "{room.roomtype.notnull}")
     private RoomType roomType;
-    @NotNull(message = "Rap phim khong duoc de trong")
+    @NotNull(message = "{room.cinema.notnull}")
     private Long cinemaId;
 }

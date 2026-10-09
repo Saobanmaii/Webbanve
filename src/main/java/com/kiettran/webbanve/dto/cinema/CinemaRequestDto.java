@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CinemaRequestDto {
-    @NotBlank(message = "Ten cua rap phim khong duoc de trong")
+    @NotBlank(message = "{cinema.name.notblank}")
     private String name;
-    @NotBlank(message = "Dia chi cua rap phim khong duoc de trong")
+    @NotBlank(message = "{cinema.address.notblank}")
     private String address;
 }

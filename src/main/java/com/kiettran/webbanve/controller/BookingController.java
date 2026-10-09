@@ -41,7 +41,7 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingResponseDto> getBookingByUserId(@RequestParam Long userId){
+    public List<BookingResponseDto> getBookingByUserId(@RequestParam(required = false) Long userId){
         return bookingService.getAllBookingByUserId(userId);
     }
 }

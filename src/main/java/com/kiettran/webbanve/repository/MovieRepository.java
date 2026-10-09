@@ -1,6 +1,7 @@
 package com.kiettran.webbanve.repository;
 
 import com.kiettran.webbanve.entity.Movie;
+import com.kiettran.webbanve.enums.MovieStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query(value = "SELECT * FROM movie WHERE title LIKE CONCAT('%', :title, '%')", nativeQuery = true)
     List<Movie> searchByTitleContaining(@Param("title") String title);
+
+    boolean existsByTmdbId(Long tmdbId);
+
+    List<Movie> findByStatus(MovieStatus status);
 }

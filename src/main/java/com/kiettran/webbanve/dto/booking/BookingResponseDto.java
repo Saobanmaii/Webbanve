@@ -17,5 +17,12 @@ public class BookingResponseDto {
     private LocalDateTime bookingTime;
     private BookingStatus bookingStatus;
     private BigDecimal totalPrice;
+    private Long showtimeId;
+    private Long movieId;
+    private String movieTitle;
+    private String posterUrl;
+    private LocalDateTime startTime;
+    private String cinemaName;
+    private String roomName;
     private List<TicketResponseDto> tickets;
 }

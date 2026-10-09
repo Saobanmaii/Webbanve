@@ -7,6 +7,7 @@ import com.kiettran.webbanve.entity.*;
 import com.kiettran.webbanve.enums.BookingStatus;
 import com.kiettran.webbanve.enums.SeatType;
 import com.kiettran.webbanve.exception.ConflictException;
+import com.kiettran.webbanve.exception.ForbiddenException;
 import com.kiettran.webbanve.exception.ResourceNotFoundException;
 import com.kiettran.webbanve.mapper.BookingMapper;
 import com.kiettran.webbanve.mapper.TicketMapper;
@@ -14,6 +15,7 @@ import com.kiettran.webbanve.repository.*;
 import com.kiettran.webbanve.service.BookingService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +50,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto createBooking(BookingRequestDto dto){
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("user.notfound", null, LocaleContextHolder.getLocale())));
+        // Bo qua dto.userId, luon dat ve cho user dang dang nhap
+        User user = getCurrentUser();
         Showtime showtime = showtimeRepository.findById(dto.getShowtimeId()).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("showtime.notfound", null, LocaleContextHolder.getLocale())));
         List<Seat> seats = seatRepository.findAllById(dto.getSeatIds());
         if(seats.size() != dto.getSeatIds().size()) throw new ResourceNotFoundException(messageSource.getMessage("seat.notfound", null, LocaleContextHolder.getLocale()));
@@ -79,6 +82,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setTotalPrice(price);
         booking.setUser(user);
+        booking.setShowtime(showtime);
         bookingRepository.save(booking);
 
         List<TicketResponseDto> ticketResponseDtos = new ArrayList<>();
@@ -88,59 +92,85 @@ public class BookingServiceImpl implements BookingService {
             ticketResponseDtos.add(ticketMapper.entityToDto(ticket));
         }
 
-        BookingResponseDto bookingResponseDto = new BookingResponseDto();
-        bookingResponseDto.setBookingId(booking.getId());
-        bookingResponseDto.setBookingTime(booking.getBookingTime());
-        bookingResponseDto.setBookingStatus(booking.getBookingStatus());
-        bookingResponseDto.setTotalPrice(booking.getTotalPrice());
+        BookingResponseDto bookingResponseDto = bookingMapper.entityToDto(booking);
         bookingResponseDto.setTickets(ticketResponseDtos);
         return bookingResponseDto;
     }
 
+    private User getCurrentUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("user.notfound", null, LocaleContextHolder.getLocale())));
+    }
+
+    private boolean isAdmin(){
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+    }
+
+    // Chi chu don hoac ADMIN moi duoc xem/thanh toan/huy
+    private Booking findOwnedBooking(Long id){
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("booking.notfound", null, LocaleContextHolder.getLocale())));
+        if(!isAdmin() && !booking.getUser().getId().equals(getCurrentUser().getId()))
+            throw new ForbiddenException(messageSource.getMessage("booking.forbidden", null, LocaleContextHolder.getLocale()));
+        return booking;
+    }
+
+    // Booking cu chua co showtime_id -> lay suat chieu tu ve dau tien
+    private void fillShowtimeFromTickets(BookingResponseDto dto, List<Ticket> tickets){
+        if(dto.getShowtimeId() == null && !tickets.isEmpty())
+            bookingMapper.setShowtimeInfo(dto, tickets.get(0).getShowtime());
+    }
+
+    private BookingResponseDto toDtoWithTickets(Booking booking){
+        BookingResponseDto dto = bookingMapper.entityToDto(booking);
+        List<Ticket> tickets = ticketRepository.findByBookingId(booking.getId());
+        fillShowtimeFromTickets(dto, tickets);
+        dto.setTickets(tickets.stream().map(ticketMapper::entityToDto).toList());
+        return dto;
+    }
+
     @Transactional
     public BookingResponseDto payBooking(Long id){
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("booking.notfound", null, LocaleContextHolder.getLocale())));
+        Booking booking = findOwnedBooking(id);
         if(booking.getBookingStatus() != BookingStatus.PENDING)
             throw new ConflictException(messageSource.getMessage("booking.alreadypaid", null, LocaleContextHolder.getLocale()));
         booking.setBookingStatus(BookingStatus.PAID);
         bookingRepository.save(booking);
-        BookingResponseDto bookingResponseDto = bookingMapper.entityToDto(booking);
-        List<TicketResponseDto> tickets = ticketRepository.findByBookingId(id).stream().map(ticketMapper::entityToDto).toList();
-        bookingResponseDto.setTickets(tickets);
-        return bookingResponseDto;
+        return toDtoWithTickets(booking);
     }
 
     @Transactional
     public BookingResponseDto cancelBooking(Long id){
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("booking.notfound", null, LocaleContextHolder.getLocale())));
+        Booking booking = findOwnedBooking(id);
         if(booking.getBookingStatus() == BookingStatus.CANCELLED)
             throw new ConflictException(messageSource.getMessage("booking.alreadycancelled", null, LocaleContextHolder.getLocale()));
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
         List<Ticket> tickets = ticketRepository.findByBookingId(id);
-        ticketRepository.deleteAll(tickets);
-        return bookingMapper.entityToDto(booking);
-    }
-
-    @Transactional(readOnly = true)
-    public BookingResponseDto getBookingById(Long id){
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("booking.notfound", null, LocaleContextHolder.getLocale())));
         BookingResponseDto bookingResponseDto = bookingMapper.entityToDto(booking);
-        List<TicketResponseDto> tickets = ticketRepository.findByBookingId(id).stream().map(ticketMapper::entityToDto).toList();
-        bookingResponseDto.setTickets(tickets);
+        fillShowtimeFromTickets(bookingResponseDto, tickets);
+        ticketRepository.deleteAll(tickets);
         return bookingResponseDto;
     }
 
     @Transactional(readOnly = true)
+    public BookingResponseDto getBookingById(Long id){
+        Booking booking = findOwnedBooking(id);
+        return toDtoWithTickets(booking);
+    }
+
+    @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookingByUserId(Long id){
+        // Khong truyen userId -> lay don cua chinh minh. Xem don nguoi khac -> phai la ADMIN
+        User current = getCurrentUser();
+        if(id == null || id.equals(current.getId())) id = current.getId();
+        else if(!isAdmin())
+            throw new ForbiddenException(messageSource.getMessage("booking.forbidden", null, LocaleContextHolder.getLocale()));
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("user.notfound", null, LocaleContextHolder.getLocale())));
         List<Booking> bookings = bookingRepository.findAllByUser_Id(user.getId());
         List<BookingResponseDto> bookingResponseDtos = new ArrayList<>();
         for(Booking booking: bookings){
-            BookingResponseDto bookingResponseDto = bookingMapper.entityToDto(booking);
-            List<TicketResponseDto> tickets = ticketRepository.findByBookingId(booking.getId()).stream().map(ticketMapper::entityToDto).toList();
-            bookingResponseDto.setTickets(tickets);
-            bookingResponseDtos.add(bookingResponseDto);
+            bookingResponseDtos.add(toDtoWithTickets(booking));
         }
         return bookingResponseDtos;
     }

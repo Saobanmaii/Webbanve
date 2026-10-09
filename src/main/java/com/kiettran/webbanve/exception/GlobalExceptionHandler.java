@@ -3,6 +3,8 @@ package com.kiettran.webbanve.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +18,11 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private final MessageSource messageSource;
 
+    public GlobalExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleResourceNotFoundException
@@ -54,6 +60,28 @@ public class GlobalExceptionHandler {
         body.setMessage(ex.getMessage());
         body.setPath(req.getRequestURI());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiError> handleForbiddenException(ForbiddenException ex,
+                                                             HttpServletRequest req){
+        ApiError body = new ApiError();
+        body.setTimestamp(LocalDateTime.now());
+        body.setStatus(HttpStatus.FORBIDDEN.value());
+        body.setMessage(ex.getMessage());
+        body.setPath(req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthentication(org.springframework.security.core.AuthenticationException ex,
+                                                         HttpServletRequest req){
+        ApiError body = new ApiError();
+        body.setTimestamp(LocalDateTime.now());
+        body.setStatus(HttpStatus.UNAUTHORIZED.value());
+        body.setMessage(messageSource.getMessage("auth.badcredentials", null, LocaleContextHolder.getLocale()));
+        body.setPath(req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
     @ExceptionHandler(Exception.class)
