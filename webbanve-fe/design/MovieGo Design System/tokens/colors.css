@@ -1,0 +1,24 @@
+:root{
+/* Ink — the auditorium. Neutral, slightly cool blacks. */
+--black:#000000;--ink-950:#050506;--ink-900:#0B0B0E;--ink-850:#111115;--ink-800:#17171C;--ink-700:#212128;--ink-600:#2C2C35;--ink-500:#3D3D48;--ink-400:#5C5C69;--ink-300:#8A8A96;--ink-200:#B4B4BE;--ink-100:#DCDCE2;--ink-50:#F4F4F6;--white:#FFFFFF;
+/* Marquee red — primary accent, selected seats, primary actions */
+--red-800:#6E0B10;--red-700:#9E1219;--red-600:#C21A22;--red-500:#E3262E;--red-400:#EF4A51;--red-300:#F77E83;--red-100:#3A0E11;
+/* Usher gold — ratings, premium / VIP */
+--gold-600:#D99A00;--gold-500:#F5B70A;--gold-400:#FFCB3D;--gold-100:#33280A;
+/* Functional */
+--teal-500:#2BB3C0;--teal-100:#0C2B2E;--green-500:#2FBF71;--green-100:#0D2A1B;--amber-500:#F59E0B;--amber-100:#30210A;
+
+/* Semantic — surfaces */
+--bg-page:var(--black);--surface-1:var(--ink-900);--surface-2:var(--ink-850);--surface-3:var(--ink-800);--surface-raised:var(--ink-700);--surface-overlay:rgba(5,5,6,.72);--surface-glass:rgba(23,23,28,.6);
+/* Semantic — text */
+--text-primary:var(--white);--text-secondary:var(--ink-200);--text-tertiary:var(--ink-300);--text-disabled:var(--ink-400);--text-on-accent:var(--white);--text-link:var(--red-400);
+/* Semantic — borders */
+--border-subtle:rgba(255,255,255,.08);--border-default:rgba(255,255,255,.14);--border-strong:rgba(255,255,255,.26);--border-focus:var(--red-400);
+/* Semantic — accent / action */
+--accent:var(--red-500);--accent-hover:var(--red-400);--accent-press:var(--red-600);--accent-soft:var(--red-100);
+--rating:var(--gold-500);--premium:var(--gold-500);
+/* Semantic — status */
+--success:var(--green-500);--success-soft:var(--green-100);--warning:var(--amber-500);--warning-soft:var(--amber-100);--danger:var(--red-400);--danger-soft:var(--red-100);--info:var(--teal-500);--info-soft:var(--teal-100);
+/* Seat map */
+--seat-available:var(--ink-700);--seat-available-border:var(--ink-500);--seat-hover:var(--ink-500);--seat-selected:var(--red-500);--seat-taken:var(--ink-850);--seat-taken-border:var(--ink-800);--seat-vip:var(--gold-500);--seat-accessible:var(--teal-500);--screen-glow:rgba(227,38,46,.22);
+}

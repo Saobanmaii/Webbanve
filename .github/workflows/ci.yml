@@ -1,0 +1,80 @@
+# CI: mỗi lần push / mở Pull Request -> tự build + kiểm tra.
+# Chỉ chạy phần nào có file thay đổi (paths filter) để tiết kiệm thời gian.
+# Deploy KHÔNG nằm ở đây: Vercel (FE) và Render (BE) tự deploy khi nhánh main có commit mới.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Phát hiện thư mục nào thay đổi
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'webbanve-fe/**'
+              - '.github/workflows/**'
+            backend:
+              - 'webbanve/**'
+              - '.github/workflows/**'
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webbanve-fe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: webbanve-fe/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webbanve
+    # Test @SpringBootTest cần MySQL thật -> dựng MySQL tạm trong container cho CI
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: movie_ticket
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      DB_URL: jdbc:mysql://localhost:3306/movie_ticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      SEED_DEMO: 'false'
+      SHOW_SQL: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+      - run: chmod +x mvnw
+      - run: ./mvnw -B verify

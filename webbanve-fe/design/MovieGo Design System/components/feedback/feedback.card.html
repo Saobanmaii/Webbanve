@@ -1,0 +1,18 @@
+<!-- @dsCard group="Components" viewport="700x330" name="Feedback" subtitle="Dialog, Toast" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="../../_ds_bundle.js"></script></head><body style="padding:20px">
+<div id="r"></div><script type="text/babel">
+const { Dialog, Toast, Button } = window.MovieGoDesignSystem_a2f949;
+function App(){return <div style={{display:'flex',gap:20,alignItems:'flex-start'}}>
+<Dialog inline width={320} title="Release your seats?" onClose={()=>{}} actions={<><Button variant="ghost" size="sm">Keep seats</Button><Button size="sm">Release</Button></>}>Seats F12 and F13 will become available to other moviegoers.</Dialog>
+<div style={{display:'flex',flexDirection:'column',gap:10}}>
+<Toast tone="success" title="Booking confirmed" message="Ref MG-7Q4K-2291 sent to your email." onClose={()=>{}}/>
+<Toast tone="warning" title="Seats held for 09:42" onClose={()=>{}}/>
+<Toast tone="error" title="Payment declined" message="Try another card."/>
+</div></div>}
+ReactDOM.createRoot(document.getElementById('r')).render(<App/>);
+</script></body></html>

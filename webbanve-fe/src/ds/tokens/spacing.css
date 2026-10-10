@@ -1,0 +1,7 @@
+:root{
+--space-0:0;--space-1:2px;--space-2:4px;--space-3:6px;--space-4:8px;--space-5:12px;--space-6:16px;--space-7:20px;--space-8:24px;--space-9:32px;--space-10:40px;--space-11:48px;--space-12:64px;--space-13:80px;--space-14:120px;
+--radius-xs:4px;--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;--radius-pill:999px;
+--seat-size:28px;--seat-gap:6px;--seat-radius:7px 7px 4px 4px;
+--container-max:1280px;--gutter:48px;--nav-height:72px;--sidebar-width:248px;
+--control-sm:30px;--control-md:40px;--control-lg:48px;
+}

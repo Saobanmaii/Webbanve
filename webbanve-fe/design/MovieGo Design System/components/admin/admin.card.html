@@ -1,0 +1,17 @@
+<!-- @dsCard group="Components" viewport="700x520" name="Admin" subtitle="StatCard, DataTable, BarList" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="../../_ds_bundle.js"></script></head><body style="padding:20px">
+<div id="r"></div><script type="text/babel">
+const { StatCard, DataTable, BarList, Badge, Switch } = window.MovieGoDesignSystem_a2f949;
+function App(){return <div style={{display:'flex',flexDirection:'column',gap:16}}>
+<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}}><StatCard label="Revenue" value="$48,210" delta="+12.4%" caption="vs last week" icon="banknote"/><StatCard label="Tickets sold" value="3,912" delta="+6.1%" icon="ticket"/><StatCard label="Occupancy" value="71%" delta="-2.3%" icon="armchair"/></div>
+<BarList items={[['Night Shift',18400],['Paper Moons',12100],['The Quiet Coast',9800],['Ironwood',5200]].map(([label,value])=>({label,value,display:'$'+value.toLocaleString()}))}/>
+<DataTable columns={[{key:'m',label:'Movie'},{key:'h',label:'Hall',muted:true},{key:'t',label:'Time',mono:true},{key:'f',label:'Format',render:r=><Badge tone={r.f==='IMAX'?'gold':'neutral'} variant={r.f==='IMAX'?'solid':'soft'}>{r.f}</Badge>},{key:'s',label:'Sold',align:'right',mono:true},{key:'p',label:'Live',render:r=><Switch checked={r.p}/>}]}
+rows={[{id:1,m:'Night Shift',h:'Hall 4',t:'19:45',f:'IMAX',s:'182/220',p:true},{id:2,m:'Paper Moons',h:'Hall 2',t:'20:10',f:'2D',s:'64/140',p:true},{id:3,m:'Ironwood',h:'Hall 1',t:'22:00',f:'2D',s:'0/140',p:false}]}/>
+</div>}
+ReactDOM.createRoot(document.getElementById('r')).render(<App/>);
+</script></body></html>

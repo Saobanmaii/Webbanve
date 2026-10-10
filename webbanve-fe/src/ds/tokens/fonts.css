@@ -1,0 +1,11 @@
+/* Font có hỗ trợ TIẾNG VIỆT (cài qua npm @fontsource, chạy offline).
+   Bản font gốc của design (assets/fonts/*.woff2) chỉ có bộ Latin -> chữ như Ộ, Ữ, Ả bị rơi sang font khác.
+   - Archivo (tiêu đề)        -> @fontsource-variable/archivo        : 'Archivo Variable'
+   - DM Sans (chữ thường)     -> thay bằng Be Vietnam Pro (DM Sans không có tiếng Việt, Be Vietnam Pro dáng gần giống)
+   - JetBrains Mono (giờ, mã) -> @fontsource-variable/jetbrains-mono : 'JetBrains Mono Variable' */
+@import "@fontsource-variable/archivo";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/be-vietnam-pro/400.css";
+@import "@fontsource/be-vietnam-pro/500.css";
+@import "@fontsource/be-vietnam-pro/600.css";
+@import "@fontsource/be-vietnam-pro/700.css";

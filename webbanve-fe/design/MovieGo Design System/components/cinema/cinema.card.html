@@ -1,0 +1,19 @@
+<!-- @dsCard group="Components" viewport="700x760" name="Cinema" subtitle="MoviePoster, ShowtimeChip, DateStrip, Seat, SeatMap, BookingSummary" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="../../_ds_bundle.js"></script></head><body style="padding:20px">
+<div id="r"></div><script type="text/babel">
+const { MoviePoster, ShowtimeChip, DateStrip, SeatMap, BookingSummary, Badge } = window.MovieGoDesignSystem_a2f949;
+function App(){const [sel,setSel]=React.useState(['F7','F8']);const [t,setT]=React.useState('19:45');const [d,setD]=React.useState('d0');
+const tog=id=>setSel(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
+return <div style={{display:'flex',flexDirection:'column',gap:24}}>
+<div style={{display:'flex',gap:16}}>{[['Night Shift',2025,8.4,'IMAX'],['The Quiet Coast',2024,7.6],['Paper Moons',2025,8.1],['Ironwood',2023,6.9]].map(([a,b,c,x])=><MoviePoster key={a} title={a} year={b} rating={c} width={150} badge={x&&<Badge tone="gold" variant="solid">{x}</Badge>} onClick={()=>{}}/>)}</div>
+<DateStrip value={d} onChange={setD} days={[['d0','Today',14],['d1','Thu',15],['d2','Fri',16],['d3','Sat',17],['d4','Sun',18],['d5','Mon',19]].map(([id,weekday,day])=>({id,weekday,day}))}/>
+<div style={{display:'flex',gap:10,flexWrap:'wrap'}}>{[['13:10','2D'],['16:30','IMAX'],['19:45','IMAX'],['21:30','2D',6],['23:50','2D',0]].map(([tm,f,l])=><ShowtimeChip key={tm} time={tm} format={f} seatsLeft={l} soldOut={l===0} selected={t===tm} onClick={()=>setT(tm)}/>)}</div>
+<SeatMap rows={['A','B','C','D','E','F','G','H']} seatsPerRow={14} taken={['C5','C6','D7','D8','E3','G10','G11']} vipRows={['H']} accessible={['A1','A14']} selected={sel} onToggle={tog}/>
+</div>}
+ReactDOM.createRoot(document.getElementById('r')).render(<App/>);
+</script></body></html>

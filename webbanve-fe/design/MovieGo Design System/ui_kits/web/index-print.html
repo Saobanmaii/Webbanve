@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><title>MovieGo — Web app (print)</title>
+<meta name="omelette-print-source" content="v1791448100615366 ui_kits/web/index.html">
+<link rel="stylesheet" href="../../styles.css">
+<style>doc-page:not(:defined){visibility:hidden}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}*{animation-delay:-99s !important;animation-duration:.001s !important;animation-iteration-count:1 !important;animation-fill-mode:both !important;animation-play-state:running !important;transition-duration:0s !important}.page{background:#000}.screen{position:relative;width:1280px;height:860px;overflow:hidden;background:var(--bg-page);color:var(--text-primary)}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="data.js"></script></head><body>
+<doc-page size="letter" orientation="landscape" content-width="1280px" content-height="860px">
+<section class="page" data-screen-label="01 Home"><div class="screen" id="s-home"></div></section>
+<section class="page" data-screen-label="02 Movie detail"><div class="screen" id="s-movie"></div></section>
+<section class="page" data-screen-label="03 Seats"><div class="screen" id="s-seats"></div></section>
+<section class="page" data-screen-label="04 Payment"><div class="screen" id="s-pay"></div></section>
+<section class="page" data-screen-label="05 Confirmation"><div class="screen" id="s-done"></div></section>
+<section class="page" data-screen-label="06 My bookings"><div class="screen" id="s-bookings"></div></section>
+</doc-page>
+<script src="doc-page.js"></script>
+<script type="text/babel" src="Backdrop.jsx"></script>
+<script type="text/babel" src="Header.jsx"></script>
+<script type="text/babel" src="Home.jsx"></script>
+<script type="text/babel" src="MovieDetail.jsx"></script>
+<script type="text/babel" src="SeatSelect.jsx"></script>
+<script type="text/babel" src="Payment.jsx"></script>
+<script type="text/babel" src="Confirmation.jsx"></script>
+<script type="text/babel" src="Bookings.jsx"></script>
+<script type="text/babel">
+const show={cinema:'MovieGo Central',time:'19:45',fmt:'IMAX'};
+const routes={home:{name:'home'},movie:{name:'movie',id:'night-shift'},seats:{name:'seats',id:'night-shift',show},pay:{name:'pay',id:'night-shift',show,seats:['F7','F8']},done:{name:'done',id:'night-shift',show,seats:['F7','F8'],total:'$28.50'},bookings:{name:'bookings'}};
+const go=()=>{};
+function Screen({route}){
+  const S={home:Home,movie:MovieDetail,seats:SeatSelect,pay:Payment,done:Confirmation,bookings:Bookings}[route.name];
+  const flow=['seats','pay','done'].includes(route.name);
+  return <div style={{position:'relative',height:'100%'}}>{!flow&&<Header route={route} go={go}/>}<S {...route} go={go}/></div>;
+}
+Object.entries(routes).forEach(([k,r])=>ReactDOM.createRoot(document.getElementById('s-'+k)).render(<Screen route={r}/>));
+</script></body></html>

@@ -1,0 +1,21 @@
+<!-- @dsCard group="Components" viewport="700x330" name="Core" subtitle="Button, IconButton, Badge, Chip, Rating, Icon" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="../../_ds_bundle.js"></script></head><body style="padding:20px">
+<div id="r"></div><script type="text/babel">
+const { Button, IconButton, Badge, Chip, Rating, Icon } = window.MovieGoDesignSystem_a2f949;
+const Row=({children})=><div style={{display:'flex',gap:10,alignItems:'center',flexWrap:'wrap',marginBottom:16}}>{children}</div>;
+function App(){const [g,setG]=React.useState(['Action','Crime']);const t=x=>setG(g.includes(x)?g.filter(y=>y!==x):[...g,x]);
+return <div>
+<Row><Button iconLeft="ticket">Book tickets</Button><Button variant="secondary" iconLeft="play">Trailer</Button><Button variant="outline" iconLeft="plus">Watchlist</Button><Button variant="ghost">Cancel</Button><Button disabled>Sold out</Button></Row>
+<Row><Button size="sm">Small</Button><Button size="lg" iconRight="arrow-right">Continue to payment</Button></Row>
+<Row><IconButton icon="chevron-left" label="Prev"/><IconButton icon="chevron-right" label="Next"/><IconButton icon="heart" label="Save" active/><IconButton icon="share-2" label="Share" variant="ghost"/><IconButton icon="play" label="Play" variant="solid" size={48}/>
+<span style={{width:12}}></span><Rating value={8.4} votes="12k"/><Rating value={7.1} size="sm"/></Row>
+<Row><Badge tone="gold" variant="solid">IMAX</Badge><Badge variant="outline">PG-13</Badge><Badge tone="accent">Premiere</Badge><Badge tone="success">Paid</Badge><Badge tone="warning">8 left</Badge><Badge tone="info">Accessible</Badge><Badge>2D</Badge></Row>
+<Row>{['Action','Adventure','Biography','Crime','Comedy','Drama'].map(x=><Chip key={x} selected={g.includes(x)} onClick={()=>t(x)}>{x}</Chip>)}</Row>
+</div>}
+ReactDOM.createRoot(document.getElementById('r')).render(<App/>);
+</script></body></html>

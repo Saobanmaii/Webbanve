@@ -1,34 +1,16 @@
-HELP.md
-secrets.properties
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# ---- Gốc monorepo ----
+# File dump database (chứa dữ liệu thật, không đưa lên GitHub)
+*.sql
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IDE
+.idea/
 *.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
 .vscode/
+.DS_Store
+
+# Bản zip trùng với thư mục design đã giải nén
+webbanve-fe/design/*.zip
+
+# Mỗi thư mục con còn .gitignore riêng:
+#   webbanve/.gitignore     (Back-end: target/, secrets.properties ...)
+#   webbanve-fe/.gitignore  (Front-end: node_modules/, dist/, .env* ...)
