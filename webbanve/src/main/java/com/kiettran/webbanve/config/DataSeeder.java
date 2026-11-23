@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Order(1)
@@ -46,7 +47,7 @@ public class DataSeeder implements CommandLineRunner {
             admin.setEmail("admin@local.com");
             admin.setFullName("Administrator");
             admin.setEnabled(true);
-            admin.setRoles(List.of(adminRole));
+            admin.setRoles(Set.of(adminRole));
             userRepository.save(admin);
         }
     }

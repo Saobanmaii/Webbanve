@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/movies/**", "/cinemas/**", "/rooms/**", "/showtimes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/movies/**", "/cinemas/**", "/rooms/**", "/showtimes/**").hasRole("ADMIN")
                         .requestMatchers("/bookings/**").authenticated()
+                        // Tro ly AI: bat dang nhap de khong ai cung goi duoc, tranh het luot Gemini
+                        .requestMatchers("/chat/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);

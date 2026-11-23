@@ -73,6 +73,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<ApiError> handleChatException(ChatException ex, HttpServletRequest req){
+        ApiError body = new ApiError();
+        body.setTimestamp(LocalDateTime.now());
+        body.setStatus(ex.getStatus().value());
+        body.setMessage(ex.getMessage());
+        body.setPath(req.getRequestURI());
+        return ResponseEntity.status(ex.getStatus()).body(body);
+    }
+
     @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(org.springframework.security.core.AuthenticationException ex,
                                                          HttpServletRequest req){

@@ -83,10 +83,12 @@ public class DemoDataSeeder implements CommandLineRunner {
         if (!enabled) return;
         // Loi seed khong duoc lam sap app
         try { seedMovies(); } catch (Exception e) { log.warn("[seed] Khong lay duoc phim tu TMDB: {}", e.toString()); }
+        // Khong boc ca buoc trong 1 transaction lon: moi lan saveAll / moi suat chieu la 1 transaction nho
+        // -> Hibernate khong giu hang nghin entity trong bo nho (server free chi co 512MB RAM)
         try {
             tx.executeWithoutResult(s -> seedCinemas());
-            tx.executeWithoutResult(s -> seedShowtimes());
-            tx.executeWithoutResult(s -> seedUsersAndBookings());
+            seedShowtimes();
+            seedUsersAndBookings();
         } catch (Exception e) {
             log.warn("[seed] Loi khi seed du lieu demo", e);
         }
@@ -408,7 +410,8 @@ public class DemoDataSeeder implements CommandLineRunner {
             BookingStatus[] statuses = {BookingStatus.PAID, BookingStatus.PAID, BookingStatus.PENDING, BookingStatus.CANCELLED};
             for (BookingStatus status : statuses) {
                 Showtime st = upcoming.get(rnd.nextInt(upcoming.size()));
-                if (createBooking(u, st, 1 + rnd.nextInt(3), status, seatCache)) created++;
+                Boolean ok = tx.execute(s -> createBooking(u, st, 1 + rnd.nextInt(3), status, seatCache));
+                if (Boolean.TRUE.equals(ok)) created++;
             }
         }
 
@@ -418,13 +421,18 @@ public class DemoDataSeeder implements CommandLineRunner {
             for (Showtime st : upcoming) {
                 if (st.getStartTime().isAfter(limit)) continue;
                 int target = (int) (seats(st, seatCache).size() * (0.05 + rnd.nextDouble() * 0.25));
-                int filled = 0;
-                while (filled < target) {
-                    int n = 1 + rnd.nextInt(4);
-                    if (!createBooking(walkIn, st, n, BookingStatus.PAID, seatCache)) break;
-                    filled += n;
-                    created++;
-                }
+                // Moi suat chieu 1 transaction
+                Integer made = tx.execute(s -> {
+                    int filled = 0, count = 0;
+                    while (filled < target) {
+                        int n = 1 + rnd.nextInt(4);
+                        if (!createBooking(walkIn, st, n, BookingStatus.PAID, seatCache)) break;
+                        filled += n;
+                        count++;
+                    }
+                    return count;
+                });
+                created += made == null ? 0 : made;
             }
         }
         log.info("[seed] Them {} don dat ve mau", created);
@@ -438,7 +446,7 @@ public class DemoDataSeeder implements CommandLineRunner {
             u.setEmail(us.email());
             u.setFullName(us.fullName());
             u.setEnabled(true);
-            u.setRoles(List.of(role));
+            u.setRoles(Set.of(role));
             return userRepository.save(u);
         });
     }

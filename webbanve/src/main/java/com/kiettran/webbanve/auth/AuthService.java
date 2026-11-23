@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AuthService {
@@ -58,7 +59,7 @@ public class AuthService {
         user.setEmail(req.getEmail());
         user.setFullName(req.getFullName());
         user.setEnabled(true);
-        user.setRoles(List.of(roleUser));
+        user.setRoles(Set.of(roleUser));
         userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getUsername());

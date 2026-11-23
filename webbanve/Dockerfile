@@ -14,5 +14,7 @@ WORKDIR /app
 ENV TZ=Asia/Ho_Chi_Minh
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-# Goi free chi co 512MB RAM -> gioi han heap
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-Duser.timezone=Asia/Ho_Chi_Minh", "-jar", "app.jar"]
+# Goi free chi co 512MB RAM (tinh ca heap + metaspace + thread) -> gioi han tung phan de khong bi kill
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=55", "-XX:MaxMetaspaceSize=150m", "-XX:ReservedCodeCacheSize=48m", \
+            "-Xss512k", "-XX:+UseSerialGC", "-XX:TieredStopAtLevel=1", \
+            "-Duser.timezone=Asia/Ho_Chi_Minh", "-jar", "app.jar"]

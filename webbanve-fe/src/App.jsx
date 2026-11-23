@@ -2,6 +2,7 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
+import ChatBox from './components/ChatBox.jsx'
 import ProtectedRoute, { GuestRoute } from './auth/ProtectedRoute.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -63,6 +64,8 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+      {/* Trợ lý AI: nằm ngoài <Routes> để đổi trang không mất đoạn chat; ẩn ở luồng đặt vé và khu admin */}
+      <ChatBox hidden={hideNavbar(pathname)} />
     </>
   )
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -26,9 +26,11 @@ public class User {
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
 
+    // Dung Set (khong phai List) -> Hibernate tao khoa chinh (user_id, role_id) cho bang noi.
+    // MySQL tren cloud (vd Aiven) bat sql_require_primary_key nen bang khong co khoa chinh se khong tao duoc.
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 }
